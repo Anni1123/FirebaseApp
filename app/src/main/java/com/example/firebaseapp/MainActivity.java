@@ -23,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
         sendData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+                   Firebase mrefChild=mref.child("Name");
+                   mrefChild.setValue("Anni");
             }
         });
     }
