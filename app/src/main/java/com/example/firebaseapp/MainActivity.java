@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button sendData;
     private EditText adddata;
+    private EditText key;
     private Firebase mroorRef;
 
     @Override
@@ -23,13 +24,15 @@ public class MainActivity extends AppCompatActivity {
         mroorRef=new Firebase("https://fir-app-d2e04.firebaseio.com/Users");
         sendData=(Button)findViewById(R.id.addBtn);
         adddata=(EditText) findViewById(R.id.valueField);
+        key=(EditText)findViewById(R.id.keyValue);
         sendData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String data=adddata.getText().toString();
-                //Firebase childref=mroorRef.child("Name");
+                String keyVal=key.getText().toString();
+                Firebase childref=mroorRef.child(keyVal);
                 //childref.setValue(data);
-                mroorRef.push().setValue(data);
+                childref.setValue(data);
             }
         });
 
