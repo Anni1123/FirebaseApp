@@ -27,8 +27,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String data=adddata.getText().toString();
-                Firebase childref=mroorRef.child("Name");
-                childref.setValue(data);
+                //Firebase childref=mroorRef.child("Name");
+                //childref.setValue(data);
+                mroorRef.push().setValue(data);
             }
         });
 
