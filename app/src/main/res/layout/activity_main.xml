@@ -6,16 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/keyValue"
+    <ListView
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="86dp"
-        android:hint="Key Value"
-        android:textAlignment="center"
-        android:text="" />
+        android:layout_height="match_parent"
+        android:id="@+id/list"/>
 
 </RelativeLayout>
