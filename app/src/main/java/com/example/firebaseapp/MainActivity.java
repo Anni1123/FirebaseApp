@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
         mref.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
                 String value=dataSnapshot.getValue(String.class);
                 musename.add(value);
                 arrayAdapter.notifyDataSetChanged();
