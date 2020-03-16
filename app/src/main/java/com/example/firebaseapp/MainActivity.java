@@ -19,10 +19,16 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.firebase.ui.database.FirebaseListOptions;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -30,62 +36,29 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
 
-    private EditText emaill;
-    private EditText pass;
-    private Button log;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseAuth mAuth;
+    private ListView mlistView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mlistView = (ListView) findViewById(R.id.list_item);
 
-        mAuth = FirebaseAuth.getInstance();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://fir-app-d2e04.firebaseio.com/Users");
+        Query query = databaseReference.limitToLast(50).orderByKey();
 
-        emaill = (EditText) findViewById(R.id.email);
-        pass = (EditText) findViewById(R.id.password);
-        log = (Button) findViewById(R.id.login);
-        mAuthListener=new FirebaseAuth.AuthStateListener() {
+        FirebaseListOptions<String> options =
+                new FirebaseListOptions.Builder<String>()
+                        .setLayout(android.R.layout.simple_list_item_1)
+                        .setQuery(query, String.class)
+                        .build();
+        FirebaseListAdapter<String> firebaseListAdapter = new FirebaseListAdapter<String>(options) {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if(firebaseAuth.getCurrentUser()!=null){
-
-                    startActivity(new Intent(MainActivity.this,AccountActivity.class));
-                }
+            protected void populateView(@NonNull View v, @NonNull String model, int position) {
+                TextView textView = (TextView) v.findViewById(android.R.id.text1);
+                textView.setText(model);
             }
         };
-        log.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                startSignIn();
-            }
-        });
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
-
-    private void startSignIn() {
-        String email = emaill.getText().toString();
-        String passwordd = pass.getText().toString();
-        if(TextUtils.isEmpty(email)||TextUtils.isEmpty(passwordd)) {
-            Toast.makeText(MainActivity.this,"FILL ALL FIELD",Toast.LENGTH_LONG).show();
-        }
-        else {
-            mAuth.signInWithEmailAndPassword(email, passwordd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-
-                    if (!task.isSuccessful()) {
-                        Toast.makeText(MainActivity.this, "SIGN IN PROBLEM", Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
-        }
+        mlistView.setAdapter(firebaseListAdapter);
     }
 }
