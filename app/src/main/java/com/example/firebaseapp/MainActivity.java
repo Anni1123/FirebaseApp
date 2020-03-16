@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,8 +23,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -33,27 +30,62 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
 
-    private static final String TAG = "My Tag";
-    private TextView moutput;
-
+    private EditText emaill;
+    private EditText pass;
+    private Button log;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        moutput = (TextView) findViewById(R.id.point);
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-            @Override
-            public void onComplete(@NonNull Task<InstanceIdResult> task) {
 
-                if(task.isSuccessful()){
-                    String token=task.getResult().getToken();
-                    Log.d(TAG,"OnComplete:"+token);
-                    moutput.setText("created");
-                }
-                else {
-                    moutput.setText("Error");
+        mAuth = FirebaseAuth.getInstance();
+
+        emaill = (EditText) findViewById(R.id.email);
+        pass = (EditText) findViewById(R.id.password);
+        log = (Button) findViewById(R.id.login);
+        mAuthListener=new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if(firebaseAuth.getCurrentUser()!=null){
+
+                    startActivity(new Intent(MainActivity.this,AccountActivity.class));
                 }
             }
+        };
+        log.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                startSignIn();
+            }
         });
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    private void startSignIn() {
+        String email = emaill.getText().toString();
+        String passwordd = pass.getText().toString();
+        if(TextUtils.isEmpty(email)||TextUtils.isEmpty(passwordd)) {
+            Toast.makeText(MainActivity.this,"FILL ALL FIELD",Toast.LENGTH_LONG).show();
+        }
+        else {
+            mAuth.signInWithEmailAndPassword(email, passwordd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(MainActivity.this, "SIGN IN PROBLEM", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
     }
 }
