@@ -44,12 +44,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                String value=dataSnapshot.getValue(String.class);
+                Integer i=value.indexOf(value);
+                musename.set(i,value);
+                arrayAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                String value=dataSnapshot.getValue(String.class);
+                musename.remove(value);
+                arrayAdapter.notifyDataSetChanged();
             }
 
             @Override
