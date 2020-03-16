@@ -1,65 +1,58 @@
 package com.example.firebaseapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ListView listView;
-    private ArrayList musename=new ArrayList<>();
-    private Firebase mref;
+
+    private static final String TAG = "My Tag";
+    private TextView moutput;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        listView=(ListView)findViewById(R.id.list);
-        mref=new Firebase("https://fir-app-d2e04.firebaseio.com/Users");
-        final ArrayAdapter<String> arrayAdapter=new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,musename);
-        listView.setAdapter(arrayAdapter);
-        mref.addChildEventListener(new ChildEventListener() {
+        moutput = (TextView) findViewById(R.id.point);
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                String value=dataSnapshot.getValue().toString();
-                musename.add(value);
-                arrayAdapter.notifyDataSetChanged();
-            }
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
+                if(task.isSuccessful()){
+                    String token=task.getResult().getToken();
+                    Log.d(TAG,"OnComplete:"+token);
+                    moutput.setText("created");
+                }
+                else {
+                    moutput.setText("Error");
+                }
             }
         });
     }
